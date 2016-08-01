@@ -19,6 +19,8 @@ package com.liwshuo.domain.interactor;
 import com.liwshuo.domain.executor.PostExecutionThread;
 import com.liwshuo.domain.executor.ThreadExecutor;
 
+import java.util.logging.Logger;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -55,14 +57,14 @@ public abstract class UseCase {
    * Executes the current use case.
    *
    * @param UseCaseSubscriber The guy who will be listen to the observable build
-   * with {@link #buildUseCaseObservable()}.
+   *                          with {@link #buildUseCaseObservable()}.
    */
   @SuppressWarnings("unchecked")
-  public void execute(Subscriber UseCaseSubscriber) {
+  public void execute(Subscriber useCaseSubscriber) {
     this.subscription = this.buildUseCaseObservable()
-        .subscribeOn(Schedulers.from(threadExecutor))
-        .observeOn(postExecutionThread.getScheduler())
-        .subscribe(UseCaseSubscriber);
+            .subscribeOn(Schedulers.from(threadExecutor))
+            .observeOn(postExecutionThread.getScheduler())
+            .subscribe(useCaseSubscriber);
   }
 
   /**

@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.liwshuo.presentation.internal.di.components.ApplicationComponent;
 import com.liwshuo.presentation.internal.di.components.DaggerApplicationComponent;
-import com.liwshuo.presentation.internal.di.modules.AppllicationModule;
+import com.liwshuo.presentation.internal.di.modules.ApplicationModule;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -25,7 +25,7 @@ public class AndroidApplication extends Application {
     private void initInjector() {
         this.applicationComponent =
                 DaggerApplicationComponent.builder()
-                        .appllicationModule(new AppllicationModule(this))
+                        .applicationModule(new ApplicationModule(this))
                         .build();
     }
 

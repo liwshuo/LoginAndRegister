@@ -14,6 +14,10 @@ public class User {
     private Boolean emailVerified;
     private Boolean mobilePhoneVerified;
 
+    public User(String objectId) {
+        this.objectId = objectId;
+    }
+
     /**
      *
      * @return

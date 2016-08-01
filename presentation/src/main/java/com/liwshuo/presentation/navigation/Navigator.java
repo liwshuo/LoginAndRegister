@@ -3,6 +3,8 @@ package com.liwshuo.presentation.navigation;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.liwshuo.presentation.view.activity.MainActivity;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -17,7 +19,11 @@ public class Navigator {
 
     }
 
-    public void toast(Context context) {
-        Toast.makeText(context, "toast", Toast.LENGTH_LONG).show();
+    public void toast(Context context, String msg) {
+        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+    }
+
+    public void launchUserDetailPage(Context context, String userId) {
+        MainActivity.launchActivity(context, userId);
     }
 }
