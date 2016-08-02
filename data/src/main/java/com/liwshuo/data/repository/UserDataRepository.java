@@ -70,8 +70,14 @@ public class UserDataRepository implements UserRepository {
 
   @Override
   public Observable<User> login(String username, String password) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.create(username, password);
+    final UserDataStore userDataStore = this.userDataStoreFactory.create();
     return userDataStore.login(username, password)
+            .map(userEntity -> this.userEntityDataMapper.transform(userEntity));
+  }
+
+  public Observable<User> register(String username, String email, String password) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.create();
+    return userDataStore.register(username, email, password)
             .map(userEntity -> this.userEntityDataMapper.transform(userEntity));
   }
 }

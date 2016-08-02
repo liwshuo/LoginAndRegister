@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.liwshuo.presentation.AndroidApplication;
 import com.liwshuo.presentation.R;
 import com.liwshuo.presentation.internal.di.components.UserComponent;
 import com.liwshuo.presentation.model.UserModel;
@@ -30,10 +31,12 @@ import butterknife.OnClick;
 
 public class UserDetailFragment extends BaseFragment implements UserDetailView {
 
-    @BindView(R.id.button)
-    Button button;
-    @BindView(R.id.textView)
-    TextView textView;
+    @BindView(R.id.username)
+    TextView usernameText;
+    @BindView(R.id.email)
+    TextView emailText;
+    @BindView(R.id.logoutButton)
+    Button logoutButton;
 
     @Inject
     UserDetailPresenter userDetailPresenter;
@@ -73,17 +76,17 @@ public class UserDetailFragment extends BaseFragment implements UserDetailView {
         }
     }
 
-    @OnClick(R.id.button)
+    @OnClick(R.id.logoutButton)
     void onClick() {
-//        this.userDetailPresenter.
-//        navigator.toast(getActivity());
+        AndroidApplication.getApplication().hasLogin = false;
+        navigator.launchLoginActivity(getActivity());
     }
 
     @Override
     public void renderUser(UserModel userModel) {
 //        this.userDetailPresenter.re
         if (userModel != null) {
-            navigator.toast(getActivity(), userModel.getUsername());
+            usernameText.setText(userModel.getUsername());
         }
         Logger.e("renderUser");
     }

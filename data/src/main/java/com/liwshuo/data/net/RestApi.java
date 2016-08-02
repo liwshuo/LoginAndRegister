@@ -45,5 +45,7 @@ public interface RestApi {
    */
   Observable<UserEntity> userEntityById(final String userId);
 
-  Observable<UserEntity> login(String userName, String password);
+  Observable<UserEntity> login(String username, String password);
+
+  Observable<UserEntity> register(String username, String email, String password);
 }

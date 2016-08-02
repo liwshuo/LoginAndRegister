@@ -20,13 +20,36 @@ import javax.inject.Inject;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-//    @Inject
-//    Navigator navigator;
+    @Inject
+    Navigator navigator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getApplicationComponent().inject(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (AndroidApplication.getApplication().hasLogin) {
+            if (isLoginActivity()) {
+                navigator.launchUserDetailPage(this, AndroidApplication.getApplication().userId);
+                finish();
+            }
+        } else {
+            if(!isLoginActivity() && !isRegisterActivity()) {
+                navigator.launchLoginActivity(this);
+            }
+        }
+    }
+
+    protected boolean isLoginActivity() {
+        return false;
+    }
+
+    protected boolean isRegisterActivity() {
+        return false;
     }
 
     protected void addFragment(int containerViewId, Fragment fragment) {

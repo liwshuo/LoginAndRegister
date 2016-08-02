@@ -54,4 +54,9 @@ class DiskUserDataStore implements UserDataStore {
   public Observable<UserEntity> login(String username, String password) {
     return null;
   }
+
+  @Override
+  public Observable<UserEntity> register(String username, String email, String password) {
+    return null;
+  }
 }

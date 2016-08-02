@@ -66,5 +66,10 @@ class CloudUserDataStore implements UserDataStore {
     return this.restApi.login(username, password).doOnNext(saveToCacheAction);
   }
 
+  @Override
+  public Observable<UserEntity> register(String username, String email, String password) {
+    return this.restApi.register(username, email, password);
+  }
+
 
 }

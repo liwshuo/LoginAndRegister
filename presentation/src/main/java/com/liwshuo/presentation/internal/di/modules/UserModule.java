@@ -5,6 +5,7 @@ import com.liwshuo.domain.executor.ThreadExecutor;
 import com.liwshuo.domain.interactor.GetUserDetail;
 import com.liwshuo.domain.interactor.GetUserList;
 import com.liwshuo.domain.interactor.LoginUser;
+import com.liwshuo.domain.interactor.RegisterUser;
 import com.liwshuo.domain.interactor.UseCase;
 import com.liwshuo.domain.repository.UserRepository;
 import com.liwshuo.presentation.internal.di.PerActivity;
@@ -60,5 +61,14 @@ public class UserModule {
     UseCase provideLoginUseCase(UserRepository userRepository, ThreadExecutor threadExecutor,
                                 PostExecutionThread postExecutionThread) {
         return new LoginUser(userRepository, threadExecutor, postExecutionThread);
+    }
+
+    @Provides
+    @PerActivity
+    @Named("register")
+    UseCase provideRegisterUseCard(UserRepository userRepository, ThreadExecutor threadExecutor,
+                                   PostExecutionThread postExecutionThread) {
+        return new RegisterUser(userRepository, threadExecutor, postExecutionThread);
+
     }
 }

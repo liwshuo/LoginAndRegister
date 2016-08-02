@@ -5,43 +5,44 @@ import android.support.annotation.NonNull;
 import com.liwshuo.domain.User;
 import com.liwshuo.domain.interactor.DefaultSubscriber;
 import com.liwshuo.domain.interactor.LoginUser;
+import com.liwshuo.domain.interactor.RegisterUser;
 import com.liwshuo.domain.interactor.UseCase;
 import com.liwshuo.presentation.AndroidApplication;
 import com.liwshuo.presentation.mapper.UserModelDataMapper;
 import com.liwshuo.presentation.model.UserModel;
 import com.liwshuo.presentation.view.UserLoginView;
+import com.liwshuo.presentation.view.UserRegisterView;
 import com.orhanobut.logger.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * Created by lishuo on 16/7/31.
+ * Created by lishuo on 16/8/2.
  */
 
-public class UserLoginPresenter implements Presenter {
+public class UserRegisterPresenter implements Presenter {
 
-    private UserLoginView userLoginView;
+    private UserRegisterView userRegisterView;
 
-    private final UseCase loginUserUseCase;
+    private final UseCase registerUserUseCase;
 
     @Inject
     UserModelDataMapper userModelDataMapper;
 
     @Inject
-    UserLoginPresenter(@Named("login")UseCase loginUserUseCase) {
-        this.loginUserUseCase = loginUserUseCase;
+    public UserRegisterPresenter(@Named("register") UseCase registerUserUseCase) {
+        this.registerUserUseCase = registerUserUseCase;
     }
 
-    public void setView(@NonNull UserLoginView view) {
-        this.userLoginView = view;
+    public void setView(@NonNull UserRegisterView view) {
+        this.userRegisterView = view;
     }
 
-    public void login(String username, String password) {
-        ((LoginUser) loginUserUseCase).setUserInfo(username, password);
-        loginUserUseCase.execute(new UserLoginSubscriber());
+    public void register(String username, String email, String password) {
+        ((RegisterUser) registerUserUseCase).setUserInfo(username, email, password);
+        registerUserUseCase.execute(new UserRegisterPresenter.UserRegisterSubscriber());
     }
-
 
     @Override
     public void resume() {
@@ -58,7 +59,7 @@ public class UserLoginPresenter implements Presenter {
 
     }
 
-    private final class UserLoginSubscriber extends DefaultSubscriber<User> {
+    private final class UserRegisterSubscriber extends DefaultSubscriber<User> {
 
         @Override
         public void onCompleted() {
@@ -71,8 +72,8 @@ public class UserLoginPresenter implements Presenter {
         public void onNext(User user) {
             super.onNext(user);
             Logger.e("onNext");
-            UserModel userModel = UserLoginPresenter.this.userModelDataMapper.transform(user);
-            userLoginView.renderUser(userModel);
+            UserModel userModel = UserRegisterPresenter.this.userModelDataMapper.transform(user);
+            userRegisterView.renderUser(userModel);
             AndroidApplication.getApplication().hasLogin = true;
             AndroidApplication.getApplication().userId = user.getObjectId();
 //            UserDetailPresenter.this.showUserDetailInView(userModel);

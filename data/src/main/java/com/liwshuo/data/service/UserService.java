@@ -41,4 +41,12 @@ public interface UserService {
     @GET("login")
     Observable<UserEntity> login(@Query("username") String username, @Query("password") String password);
 
+    @Headers({
+            "X-LC-Id: T85Mq6nI9y9xqJhScED3PMf8-gzGzoHsz",
+            "X-LC-Key: ikdYrUIroNwl3fEm1bMdt1UX",
+            "Content-Type: application/json"
+    })
+    @POST("users")
+    Observable<UserEntity> register(@Body Map<String, String> params);
+
 }

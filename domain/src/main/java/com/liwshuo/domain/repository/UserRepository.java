@@ -17,6 +17,7 @@ package com.liwshuo.domain.repository;
 
 
 import com.liwshuo.domain.User;
+import com.liwshuo.domain.interactor.UseCase;
 
 import java.util.List;
 
@@ -39,4 +40,6 @@ public interface UserRepository {
   Observable<User> user(final String userId);
 
   Observable<User> login(final String username, final String password);
+
+  Observable<User> register(final String username, final String email, final String password);
 }

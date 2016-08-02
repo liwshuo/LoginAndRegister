@@ -39,4 +39,7 @@ public interface UserDataStore {
   Observable<UserEntity> userEntityDetails(final String userId);
 
   Observable<UserEntity> login(final String username, final String password);
+
+  Observable<UserEntity> register(final String username, final String email, final String password);
+
 }

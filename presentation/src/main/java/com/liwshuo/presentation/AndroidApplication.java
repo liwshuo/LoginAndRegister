@@ -14,6 +14,20 @@ import com.squareup.leakcanary.LeakCanary;
 public class AndroidApplication extends Application {
 
     private ApplicationComponent applicationComponent;
+    private static AndroidApplication application;
+    public String sessionToken = "";
+    public boolean hasLogin = false;
+    public boolean isAutoLoginChecked = false;
+    public String userId = "";
+
+    public AndroidApplication() {
+        super();
+        application = this;
+    }
+
+    public static AndroidApplication getApplication() {
+        return application;
+    }
 
     @Override
     public void onCreate() {

@@ -104,6 +104,16 @@ public class RestApiImpl implements RestApi {
     return userService.login(username, password);
   }
 
+  @Override
+  public Observable<UserEntity> register(String username, String email, String password) {
+    UserService userService = retrofit.create(UserService.class);
+    Map<String, String> params = new HashMap<>();
+    params.put("username", username);
+    params.put("email", email);
+    params.put("password", password);
+    return userService.register(params);
+  }
+
   private String getUserEntitiesFromApi() throws MalformedURLException {
     return ApiConnection.createGET(API_URL_GET_USER_LIST).requestSyncCall();
   }

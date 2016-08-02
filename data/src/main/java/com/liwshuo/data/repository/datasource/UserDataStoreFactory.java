@@ -59,7 +59,7 @@ public class  UserDataStoreFactory {
     return userDataStore;
   }
 
-  public UserDataStore create(String username, String password) {
+  public UserDataStore create() {
     UserDataStore userDataStore = createCloudDataStore();
     return userDataStore;
   }
