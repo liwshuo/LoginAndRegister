@@ -5,12 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
+import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -30,6 +35,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
 public class LoginActivity extends BaseActivity implements HasComponent, UserLoginView{
 
@@ -50,8 +56,9 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         initTransition();
+        setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         initInjector();
         userLoginPresenter.setView(this);
@@ -62,13 +69,13 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return;
         }
-        Transition exitTrans = new Fade();
+        Transition exitTrans = new Explode();
         getWindow().setExitTransition(exitTrans);
 
-        Transition reenterTrans = new Fade();
+        Transition reenterTrans = new Slide();
         getWindow().setReenterTransition(reenterTrans);
 
-        Transition enterTrans = new Fade();
+        Transition enterTrans = new Explode();
         getWindow().setEnterTransition(enterTrans);
     }
 
@@ -78,6 +85,13 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
                 .activityModule(getActivityModule())
                 .userModule(new UserModule())
                 .build().inject(this);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public static void launchActivity(Context context, Bundle bundle) {
+        Intent intent = new Intent();
+        intent.setClass(context, LoginActivity.class);
+        context.startActivity(intent, bundle);
     }
 
     public static void launchActivity(Context context) {
@@ -103,7 +117,37 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
 
     @OnClick(R.id.linkToRegisterScreenButton)
     void linkToRegisterScreen() {
-        navigator.launchRegisterActivity(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            Pair<View, String> p1 = Pair.create((View)usernameLayout, "usernameLayout");
+            Pair<View, String> p2 = Pair.create((View)passwordLayout, "passwordLayout");
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(this, p1, p2);
+            navigator.launchRegisterActivity(this, options.toBundle());
+        }else {
+            navigator.launchRegisterActivity(this);
+        }
+    }
+
+    @OnTextChanged(R.id.username)
+    void onUsernameTextChanged() {
+        if (!TextUtils.isEmpty(usernameLayout.getError())) {
+            usernameLayout.setError("");
+        }
+        if (TextUtils.isEmpty(usernameInput.getText())) {
+            usernameLayout.setError(getResources().getString(R.string.error_username_null));
+        }
+    }
+
+
+    @OnTextChanged(R.id.password)
+    void onPasswordTextChanged() {
+        if (!TextUtils.isEmpty(passwordLayout.getError())) {
+            passwordLayout.setError("");
+        }
+        if (TextUtils.isEmpty(passwordInput.getText())) {
+            passwordLayout.setError(getResources().getString(R.string.error_password_null));
+            return;
+        }
     }
 
     @Override

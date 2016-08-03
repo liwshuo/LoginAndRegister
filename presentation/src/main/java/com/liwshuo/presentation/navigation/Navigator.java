@@ -1,6 +1,9 @@
 package com.liwshuo.presentation.navigation;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.widget.Toast;
 
 import com.liwshuo.presentation.view.activity.LoginActivity;
@@ -29,8 +32,18 @@ public class Navigator {
         MainActivity.launchActivity(context, userId);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void launchLoginActivity(Context context, Bundle bundle) {
+        LoginActivity.launchActivity(context, bundle);
+    }
+
     public void launchLoginActivity(Context context) {
         LoginActivity.launchActivity(context);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void launchRegisterActivity(Context context, Bundle bundle) {
+        RegisterActivity.launchActivity(context, bundle);
     }
 
     public void launchRegisterActivity(Context context) {

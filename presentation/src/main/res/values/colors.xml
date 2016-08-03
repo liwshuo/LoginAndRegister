@@ -8,6 +8,7 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+    <color name="red">#F44336</color>
 
     <color name="alpha26_accent">#42FF4081</color>
     <color name="alpha26_ripple">#42ffffff</color>
