@@ -1,10 +1,17 @@
 package com.liwshuo.presentation.view.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -32,6 +39,12 @@ public class RegisterActivity extends BaseActivity implements UserRegisterView {
     EditText passwordInput;
     @BindView(R.id.submit)
     Button registerSubmit;
+    @BindView(R.id.usernameLayout)
+    TextInputLayout usernameLayout;
+    @BindView(R.id.emailLayout)
+    TextInputLayout emailLayout;
+    @BindView(R.id.passwordLayout)
+    TextInputLayout passwordLayout;
 
     @Inject
     UserRegisterPresenter userRegisterPresenter;
@@ -43,9 +56,22 @@ public class RegisterActivity extends BaseActivity implements UserRegisterView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        initTransition();
         ButterKnife.bind(this);
         initInjector();
         userRegisterPresenter.setView(this);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void initTransition() {
+        Transition exitTrans = new Fade();
+        getWindow().setExitTransition(exitTrans);
+
+        Transition reenterTrans = new Fade();
+        getWindow().setReenterTransition(reenterTrans);
+
+        Transition enterTrans = new Fade();
+        getWindow().setEnterTransition(enterTrans);
     }
 
     private void initInjector() {
@@ -72,12 +98,15 @@ public class RegisterActivity extends BaseActivity implements UserRegisterView {
         String email = emailInput.getText().toString();
         String password = passwordInput.getText().toString();
         if (TextUtils.isEmpty(username)) {
+            usernameLayout.setError(getResources().getString(R.string.error_username_null));
             return;
         }
         if (TextUtils.isEmpty(email)) {
+            emailLayout.setError(getResources().getString(R.string.error_email_null));
             return;
         }
         if (TextUtils.isEmpty(password)) {
+            passwordLayout.setError(getResources().getString(R.string.error_password_null));
             return;
         }
         userRegisterPresenter.register(username, email, password);

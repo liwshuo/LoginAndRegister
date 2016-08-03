@@ -8,4 +8,8 @@
     <string name="hint_email">邮箱</string>
     <string name="logout">注销</string>
     <string name="welcome">你好</string>
+
+    <string name="error_username_null">请输入用户名</string>
+    <string name="error_email_null">请输入邮箱</string>
+    <string name="error_password_null">请输入密码</string>
 </resources>

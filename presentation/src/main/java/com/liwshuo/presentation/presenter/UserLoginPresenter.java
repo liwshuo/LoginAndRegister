@@ -2,6 +2,7 @@ package com.liwshuo.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
 import com.liwshuo.domain.User;
 import com.liwshuo.domain.interactor.DefaultSubscriber;
 import com.liwshuo.domain.interactor.LoginUser;
@@ -14,6 +15,9 @@ import com.orhanobut.logger.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import okhttp3.ResponseBody;
+import retrofit2.adapter.rxjava.HttpException;
 
 /**
  * Created by lishuo on 16/7/31.
@@ -81,7 +85,10 @@ public class UserLoginPresenter implements Presenter {
         @Override
         public void onError(Throwable e) {
             super.onError(e);
-            Logger.e(e.getMessage());
+            if (e instanceof HttpException) {
+                ResponseBody body = ((HttpException) e).response().errorBody();
+            }
+            Logger.e(e.getLocalizedMessage());
             AndroidApplication.getApplication().hasLogin = false;
 //            UserDetailPresenter.this.hideViewLoading();
 //            UserDetailPresenter.this.showErrorMessage();

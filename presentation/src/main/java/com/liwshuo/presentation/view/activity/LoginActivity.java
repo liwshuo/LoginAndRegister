@@ -1,12 +1,20 @@
 package com.liwshuo.presentation.view.activity;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.liwshuo.presentation.BuildConfig;
 import com.liwshuo.presentation.R;
 import com.liwshuo.presentation.internal.di.HasComponent;
 import com.liwshuo.presentation.internal.di.components.DaggerUserComponent;
@@ -31,6 +39,10 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
     EditText passwordInput;
     @BindView(R.id.submit)
     Button submitButton;
+    @BindView(R.id.usernameLayout)
+    TextInputLayout usernameLayout;
+    @BindView(R.id.passwordLayout)
+    TextInputLayout passwordLayout;
 
     @Inject
     UserLoginPresenter userLoginPresenter;
@@ -39,9 +51,25 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        initTransition();
         ButterKnife.bind(this);
         initInjector();
         userLoginPresenter.setView(this);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void initTransition() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
+        Transition exitTrans = new Fade();
+        getWindow().setExitTransition(exitTrans);
+
+        Transition reenterTrans = new Fade();
+        getWindow().setReenterTransition(reenterTrans);
+
+        Transition enterTrans = new Fade();
+        getWindow().setEnterTransition(enterTrans);
     }
 
     private void initInjector() {
@@ -61,11 +89,15 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
     @OnClick(R.id.submit)
     void onSubmit() {
         if (TextUtils.isEmpty(usernameInput.getText())) {
+            usernameLayout.setError(getResources().getString(R.string.error_username_null));
             return;
         }
+        usernameLayout.setError("");
         if (TextUtils.isEmpty(passwordInput.getText())) {
+            passwordLayout.setError(getResources().getString(R.string.error_password_null));
             return;
         }
+        passwordLayout.setError("");
         userLoginPresenter.login(usernameInput.getText().toString(), passwordInput.getText().toString());
     }
 
