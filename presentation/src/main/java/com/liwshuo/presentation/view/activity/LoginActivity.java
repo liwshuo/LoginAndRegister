@@ -11,24 +11,23 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.transition.Explode;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.liwshuo.presentation.BuildConfig;
 import com.liwshuo.presentation.R;
 import com.liwshuo.presentation.internal.di.HasComponent;
 import com.liwshuo.presentation.internal.di.components.DaggerUserComponent;
-import com.liwshuo.presentation.internal.di.components.UserComponent;
 import com.liwshuo.presentation.internal.di.modules.UserModule;
 import com.liwshuo.presentation.model.UserModel;
-import com.liwshuo.presentation.navigation.Navigator;
+import com.liwshuo.presentation.model.exception.LoginErrorResponse;
 import com.liwshuo.presentation.presenter.UserLoginPresenter;
 import com.liwshuo.presentation.view.UserLoginView;
+import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
 import javax.inject.Inject;
 
@@ -36,6 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import butterknife.OnTouch;
 
 public class LoginActivity extends BaseActivity implements HasComponent, UserLoginView{
 
@@ -49,9 +49,16 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
     TextInputLayout usernameLayout;
     @BindView(R.id.passwordLayout)
     TextInputLayout passwordLayout;
+    @BindView(R.id.linkToRegisterScreenButton)
+    Button linkToRegisterScreenButton;
+    @BindView(R.id.progressBar)
+    CircleProgressBar progressBar;
 
     @Inject
     UserLoginPresenter userLoginPresenter;
+
+    private int startX;
+    private int startY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +119,18 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
             return;
         }
         passwordLayout.setError("");
-        userLoginPresenter.login(usernameInput.getText().toString(), passwordInput.getText().toString());
+        userLoginPresenter.tryLogin(usernameInput.getText().toString(), passwordInput.getText().toString());
     }
+
+    @OnTouch(R.id.submit)
+    boolean  onTouch(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            startX = (int) event.getRawX();
+            startY = (int) event.getRawY();
+        }
+        return super.onTouchEvent(event);
+    }
+
 
     @OnClick(R.id.linkToRegisterScreenButton)
     void linkToRegisterScreen() {
@@ -151,12 +168,21 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
     }
 
     @Override
-    public void renderUser(UserModel userModel) {
+    public void login(UserModel userModel) {
         if (userModel != null) {
-            navigator.launchUserDetailPage(this, userModel.getObjectId());
-            finish();
-//            navigator.toast(getActivity(), userModel.getUsername());
+            navigator.launchUserDetailPage(this, userModel.getObjectId(), startX, startY);
+//            finish();
         }
+    }
+
+    @Override
+    public void showUsernameError(LoginErrorResponse errorResponse) {
+        usernameLayout.setError(errorResponse.getError());
+    }
+
+    @Override
+    public void showPasswordError(LoginErrorResponse errorResponse) {
+        passwordLayout.setError(errorResponse.getError());
     }
 
     @Override
@@ -166,12 +192,20 @@ public class LoginActivity extends BaseActivity implements HasComponent, UserLog
 
     @Override
     public void showLoading() {
-
+        usernameInput.setEnabled(false);
+        passwordInput.setEnabled(false);
+        submitButton.setEnabled(false);
+        linkToRegisterScreenButton.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        usernameInput.setEnabled(true);
+        passwordInput.setEnabled(true);
+        submitButton.setEnabled(true);
+        linkToRegisterScreenButton.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override

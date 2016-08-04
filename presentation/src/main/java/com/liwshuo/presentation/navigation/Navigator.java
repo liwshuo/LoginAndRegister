@@ -32,6 +32,10 @@ public class Navigator {
         MainActivity.launchActivity(context, userId);
     }
 
+    public void launchUserDetailPage(Context context, String userId, int startX, int startY) {
+        MainActivity.launchActivity(context, userId, startX, startY);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void launchLoginActivity(Context context, Bundle bundle) {
         LoginActivity.launchActivity(context, bundle);

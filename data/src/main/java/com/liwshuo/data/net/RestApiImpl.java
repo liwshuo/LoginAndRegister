@@ -22,6 +22,7 @@ import android.net.NetworkInfo;
 import com.liwshuo.data.entity.UserEntity;
 import com.liwshuo.data.entity.mapper.UserEntityJsonMapper;
 import com.liwshuo.data.exception.NetworkConnectionException;
+import com.liwshuo.data.exception.RxErrorHandlingCallAdapterFactory;
 import com.liwshuo.data.service.UserService;
 import com.liwshuo.domain.interactor.DefaultSubscriber;
 
@@ -61,7 +62,8 @@ public class RestApiImpl implements RestApi {
     retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+            .addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
             .build();
     this.context = context.getApplicationContext();
     this.userEntityJsonMapper = userEntityJsonMapper;

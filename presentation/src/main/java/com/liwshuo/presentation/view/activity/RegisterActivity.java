@@ -1,18 +1,14 @@
 package com.liwshuo.presentation.view.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.transition.Explode;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.view.View;
@@ -24,9 +20,11 @@ import com.liwshuo.presentation.R;
 import com.liwshuo.presentation.internal.di.components.DaggerUserComponent;
 import com.liwshuo.presentation.internal.di.modules.UserModule;
 import com.liwshuo.presentation.model.UserModel;
+import com.liwshuo.presentation.model.exception.LoginErrorResponse;
 import com.liwshuo.presentation.navigation.Navigator;
 import com.liwshuo.presentation.presenter.UserRegisterPresenter;
 import com.liwshuo.presentation.view.UserRegisterView;
+import com.lsjwzh.widget.materialloadingprogressbar.CircleProgressBar;
 
 import javax.inject.Inject;
 
@@ -51,6 +49,8 @@ public class RegisterActivity extends BaseActivity implements UserRegisterView {
     TextInputLayout emailLayout;
     @BindView(R.id.passwordLayout)
     TextInputLayout passwordLayout;
+    @BindView(R.id.progressBar)
+    CircleProgressBar progressBar;
 
     @Inject
     UserRegisterPresenter userRegisterPresenter;
@@ -122,7 +122,7 @@ public class RegisterActivity extends BaseActivity implements UserRegisterView {
             passwordLayout.setError(getResources().getString(R.string.error_password_null));
             return;
         }
-        userRegisterPresenter.register(username, email, password);
+        userRegisterPresenter.tryRegister(username, email, password);
     }
 
     @OnTextChanged(R.id.username)
@@ -173,19 +173,42 @@ public class RegisterActivity extends BaseActivity implements UserRegisterView {
 //    }
 
     @Override
-    public void renderUser(UserModel userModel) {
+    public void doRegister(UserModel userModel) {
         navigator.launchUserDetailPage(this, userModel.getObjectId());
         finish();
     }
 
     @Override
-    public void showLoading() {
+    public void showUsernameError(LoginErrorResponse errorResponse) {
+        usernameLayout.setError(errorResponse.getError());
+    }
 
+    @Override
+    public void showEmailError(LoginErrorResponse errorResponse) {
+        emailLayout.setError(errorResponse.getError());
+    }
+
+    @Override
+    public void showPasswordError(LoginErrorResponse errorResponse) {
+        passwordLayout.setError(errorResponse.getError());
+    }
+
+    @Override
+    public void showLoading() {
+        usernameInput.setEnabled(false);
+        emailInput.setEnabled(false);
+        passwordInput.setEnabled(false);
+        registerSubmit.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        usernameInput.setEnabled(true);
+        emailInput.setEnabled(true);
+        passwordInput.setEnabled(true);
+        registerSubmit.setEnabled(true);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override

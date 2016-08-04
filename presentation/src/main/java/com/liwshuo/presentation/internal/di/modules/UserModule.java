@@ -57,7 +57,7 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("login")
+    @Named("tryLogin")
     UseCase provideLoginUseCase(UserRepository userRepository, ThreadExecutor threadExecutor,
                                 PostExecutionThread postExecutionThread) {
         return new LoginUser(userRepository, threadExecutor, postExecutionThread);
@@ -65,7 +65,7 @@ public class UserModule {
 
     @Provides
     @PerActivity
-    @Named("register")
+    @Named("tryRegister")
     UseCase provideRegisterUseCard(UserRepository userRepository, ThreadExecutor threadExecutor,
                                    PostExecutionThread postExecutionThread) {
         return new RegisterUser(userRepository, threadExecutor, postExecutionThread);

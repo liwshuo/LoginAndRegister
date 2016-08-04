@@ -2,7 +2,7 @@ package com.liwshuo.presentation.presenter;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.Gson;
+import com.liwshuo.data.exception.RetrofitException;
 import com.liwshuo.domain.User;
 import com.liwshuo.domain.interactor.DefaultSubscriber;
 import com.liwshuo.domain.interactor.LoginUser;
@@ -10,14 +10,14 @@ import com.liwshuo.domain.interactor.UseCase;
 import com.liwshuo.presentation.AndroidApplication;
 import com.liwshuo.presentation.mapper.UserModelDataMapper;
 import com.liwshuo.presentation.model.UserModel;
+import com.liwshuo.presentation.model.exception.LoginErrorResponse;
 import com.liwshuo.presentation.view.UserLoginView;
 import com.orhanobut.logger.Logger;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import okhttp3.ResponseBody;
-import retrofit2.adapter.rxjava.HttpException;
 
 /**
  * Created by lishuo on 16/7/31.
@@ -33,7 +33,7 @@ public class UserLoginPresenter implements Presenter {
     UserModelDataMapper userModelDataMapper;
 
     @Inject
-    UserLoginPresenter(@Named("login")UseCase loginUserUseCase) {
+    UserLoginPresenter(@Named("tryLogin")UseCase loginUserUseCase) {
         this.loginUserUseCase = loginUserUseCase;
     }
 
@@ -41,7 +41,8 @@ public class UserLoginPresenter implements Presenter {
         this.userLoginView = view;
     }
 
-    public void login(String username, String password) {
+    public void tryLogin(String username, String password) {
+        showViewLoading();
         ((LoginUser) loginUserUseCase).setUserInfo(username, password);
         loginUserUseCase.execute(new UserLoginSubscriber());
     }
@@ -62,13 +63,46 @@ public class UserLoginPresenter implements Presenter {
 
     }
 
+    private void doLogin(UserModel userModel) {
+        userLoginView.login(userModel);
+        AndroidApplication.getApplication().hasLogin = true;
+        AndroidApplication.getApplication().userId = userModel.getObjectId();
+    }
+
+    private void hideViewLoading() {
+        userLoginView.hideLoading();
+    }
+
+    private void showViewLoading() {
+        userLoginView.showLoading();
+    }
+
+    private void showErrorMsg(LoginErrorResponse errorResponse) {
+        int errorCode = errorResponse.getCode();
+        Logger.e(errorResponse.getError() + errorResponse.getCode());
+        switch (errorCode) {
+            case 200:
+            case 202:
+            case 211:
+            case 217:
+                userLoginView.showUsernameError(errorResponse);
+                break;
+            case 1:
+            case 201:
+            case 210:
+            case 218:
+                userLoginView.showPasswordError(errorResponse);
+                break;
+        }
+    }
+
     private final class UserLoginSubscriber extends DefaultSubscriber<User> {
 
         @Override
         public void onCompleted() {
             super.onCompleted();
             Logger.e("complete");
-//            UserLoginPresenter.this.hideViewLoading();
+            hideViewLoading();
         }
 
         @Override
@@ -76,23 +110,21 @@ public class UserLoginPresenter implements Presenter {
             super.onNext(user);
             Logger.e("onNext");
             UserModel userModel = UserLoginPresenter.this.userModelDataMapper.transform(user);
-            userLoginView.renderUser(userModel);
-            AndroidApplication.getApplication().hasLogin = true;
-            AndroidApplication.getApplication().userId = user.getObjectId();
-//            UserDetailPresenter.this.showUserDetailInView(userModel);
+            doLogin(userModel);
         }
 
         @Override
         public void onError(Throwable e) {
             super.onError(e);
-            if (e instanceof HttpException) {
-                ResponseBody body = ((HttpException) e).response().errorBody();
-            }
-            Logger.e(e.getLocalizedMessage());
             AndroidApplication.getApplication().hasLogin = false;
-//            UserDetailPresenter.this.hideViewLoading();
-//            UserDetailPresenter.this.showErrorMessage();
-//            UserDetailPresenter.this.showViewRetry();
+            RetrofitException error = (RetrofitException) e;
+            try {
+                LoginErrorResponse errorResponse = error.getErrorBodyAs(LoginErrorResponse.class);
+                showErrorMsg(errorResponse);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+           hideViewLoading();
         }
     }
 }

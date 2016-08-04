@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".view.activity.MainActivity"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask"
+            android:theme="@style/TransparentTheme"></activity>
         <activity android:name=".view.activity.LoginActivity"
             android:launchMode="singleTask">
             <intent-filter>

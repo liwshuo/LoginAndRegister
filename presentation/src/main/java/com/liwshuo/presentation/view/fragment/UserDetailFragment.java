@@ -80,6 +80,7 @@ public class UserDetailFragment extends BaseFragment implements UserDetailView {
     void onClick() {
         AndroidApplication.getApplication().hasLogin = false;
         navigator.launchLoginActivity(getActivity());
+        getActivity().finish();
     }
 
     @Override
@@ -88,7 +89,7 @@ public class UserDetailFragment extends BaseFragment implements UserDetailView {
         if (userModel != null) {
             usernameText.setText(userModel.getUsername());
         }
-        Logger.e("renderUser");
+        Logger.e("tryLogin");
     }
 
     @Override

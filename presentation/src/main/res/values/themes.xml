@@ -10,4 +10,5 @@
         <item name="colorControlHighlight">@color/ripple_material_dark</item>
         <item name="android:icon">@color/icons</item>
     </style>
+
 </resources>

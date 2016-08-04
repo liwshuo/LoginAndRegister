@@ -35,7 +35,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (AndroidApplication.getApplication().hasLogin) {
             if (isLoginActivity()) {
                 navigator.launchUserDetailPage(this, AndroidApplication.getApplication().userId);
-                finish();
             }
         } else {
             if(!isLoginActivity() && !isRegisterActivity()) {
